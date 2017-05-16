@@ -1,4 +1,5 @@
-<div class="container">
+<div id="loginForm">
+    <div class="container">
     <div class="row main">
         <div class="panel-heading">
             <div class="panel-title text-center">
@@ -7,15 +8,27 @@
             </div>
         </div>
         <div class="main-login main-center">
+             <div v-if="success" class="alert alert-success">
+              User was created successfully.
+             </div>
+                <div v-if="errors.length > 0" class="alert alert-danger">
+                    <ul>
+                        <li v-for="error in errors">
+                            {{error.errorDescription}}
+                        </li>
+                    </ul>
+                </div>
             <form class="form-horizontal" method="post" action="#">
-
                 <div class="form-group">
                     <label for="name" class="cols-sm-2 control-label">Your Name</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+                            <span class="input-group-addon">
+                                <i class="fa fa-user fa" aria-hidden="true"></i>
+                            </span>
                             <input type="text" class="form-control" name="name" id="name"
-                                   placeholder="Enter your Name"/>
+                                   placeholder="Enter your Name" v-model="name"/>
+                            <span>{{nameError}}</span>
                         </div>
                     </div>
                 </div>
@@ -24,9 +37,12 @@
                     <label for="email" class="cols-sm-2 control-label">Your Email</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+                            <span class="input-group-addon">
+                                <i class="fa fa-envelope fa" aria-hidden="true"></i>
+                            </span>
                             <input type="text" class="form-control" name="email" id="email"
-                                   placeholder="Enter your Email"/>
+                                   placeholder="Enter your Email" v-model="email"/>
+                            <span>{{emailError}}</span>
                         </div>
                     </div>
                 </div>
@@ -35,9 +51,12 @@
                     <label for="username" class="cols-sm-2 control-label">Username</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+                            <span class="input-group-addon">
+                                <i class="fa fa-users fa" aria-hidden="true"></i>
+                            </span>
                             <input type="text" class="form-control" name="username" id="username"
-                                   placeholder="Enter your Username"/>
+                                   placeholder="Enter your Username" v-model="username"/>
+                            <span>{{usernameError}}</span>
                         </div>
                     </div>
                 </div>
@@ -46,10 +65,13 @@
                     <label for="password" class="cols-sm-2 control-label">Password</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+                            <span class="input-group-addon">
+                                <i class="fa fa-lock fa-lg" aria-hidden="true"></i>
+                            </span>
                             <input type="password" class="form-control" name="password" id="password"
-                                   placeholder="Enter your Password"/>
+                                   placeholder="Enter your Password" v-model="password"/>
                         </div>
+                         <span>{{passwordError}}</span>
                     </div>
                 </div>
 
@@ -57,17 +79,148 @@
                     <label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+                            <span class="input-group-addon">
+                                <i class="fa fa-lock fa-lg" aria-hidden="true"></i>
+                            </span>
                             <input type="password" class="form-control" name="confirm" id="confirm"
-                                   placeholder="Confirm your Password"/>
+                                   placeholder="Confirm your Password" v-model="confirmPassword"/>
+                            <span>{{confirmPasswordError}}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group ">
-                    <button type="button" class="btn btn-primary btn-lg btn-block login-button">Register</button>
+                    <button type="button" class="btn btn-primary btn-lg btn-block login-button"
+                            v-on:click="register()">Register</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+</div>
+<script>
+    var vue = new Vue({
+        el: "#loginForm",
+        data: {
+            confirmPassword: "",
+            confirmPasswordError: "",
+            email: "",
+            emailError: "",
+            errors: [],
+            name: "",
+            nameError: "",
+            password: "",
+            passwordError: "",
+            success: false,
+            username: "",
+            usernameError: ""
+        },
+        methods: {
+            round: function (number) {
+                return Math.round(number);
+            },
+            post: function (url, data) {
+                var self = this;
+                return new Promise(function (resolve, reject) {
+                    $.ajax(url, {
+                        type: "POST",
+                        data: data,
+                        error: function (xhr, status) {
+                            reject(xhr.responseJSON);
+                        },
+                        success: function (xhr, statusText) {
+                            resolve(xhr.responseJSON);
+                        }
+                    });
+                });
+            },
+            get: function (url, data) {
+                var self = this;
+                return new Promise(function (resolve, reject) {
+                    $.get(url, data).done(function (data) {
+                        resolve(data);
+                    }).fail(function (err) {
+                        reject(err.responseJSON);
+                    });
+                });
+
+            },
+            clearErrors: function () {
+                var self                  = this;
+                self.errors               = [];
+                self.nameError            = "";
+                self.emailError           = "";
+                self.usernameError        = "";
+                self.passwordError        = "";
+                self.confirmPasswordError = "";
+            },
+            checkForms: function () {
+                var self = this;
+                var fail = false;
+                self.clearErrors();
+                if (!self.name) {
+                    self.nameError = "Name can not be blank.";
+                    fail           = true;
+                }
+                if (!self.email) {
+                    self.emailError = "E-mail can not be blank.";
+                    fail            = true;
+                }
+                if (!self.username) {
+                    self.usernameError = "Username can not be blank.";
+                    fail               = true;
+                }
+                if (!self.password) {
+                    self.PasswordError = "Password can not be blank.";
+                    fail               = true;
+                }
+                if (!self.confirmPassword) {
+                    if (!self.password && self.password !== self.confirmPassword) {
+                        self.confirmPasswordError = "Passwords do not match.";
+                    }
+                    else {
+                        self.confirmPasswordError = "Confirm password can not be blank."
+                    }
+                    fail               = true;
+                }
+                return !fail;
+            },
+            register: function () {
+                var self = this;
+                if (self.checkForms()) {
+                    var d = {
+                        firstName: self.name.split(" ")[0],
+                        lastName: self.name.split(" ")[1],
+                        email: self.email,
+                        username: self.username,
+                        password: self.password
+                    };
+                    self.post("/users/create/", d).then(function (result) {
+                        if (result) {
+                            self.success = true;
+                        }
+                    }).catch(function (error) {
+                        self.errors  = [];
+                        self.success = false;
+                        self.errors.push(error);
+                    });
+                }
+            }
+        },
+        watch: {
+//            date: function () {
+//                this.updateTrackingInformation();
+//            }
+        },
+        mounted: function () {
+//            var self = this;
+            // Hook the change event to give vue the new value
+//            $("#start-date").on("dp.change", function (e) {
+//                var curDate = e.date.format("YYYY-MM-DD");
+//                if (curDate !== self.date) {
+//                    self.date = e.date.format("YYYY-MM-DD");
+//                }
+//            });
+        }
+    });
+</script>
