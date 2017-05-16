@@ -11,7 +11,7 @@ router.get("/", function (req, res, next) {
 //        console.log("The solution is: " + rows[0].solution);
 //    });
 //    db.connection.end();
-    res.render("index", {title: "Express"});
+    res.render("index", {title: "Welcome"});
 });
 
 
