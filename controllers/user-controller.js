@@ -29,6 +29,7 @@ module.exports.login = function (req, res) {
                 var token = jwt.sign(userData, secret, {
                     expiresIn: 60*60*24
                 });
+                delete userData.user_password;
                 res.json({
                     jwt_token: token,
                     data: userData
