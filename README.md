@@ -13,6 +13,6 @@ This application uses Node JS, Express, and MySql
 * yarn add global mysql sequelize sequelize-cli
 * sequelize db:migrate (if this fails, you may need to create the schema jwt_example then re-run this command)
 * npm start
-* From your browser navigate to localhost:3001 or 127.0.0.1:3001
+* From your browser navigate to localhost:3001 or 127.0.0.1:3001 (Port can be changed in /bin/www line 16)
 
 After completing the above steps you should be able to play around with some of the features on the website. The information you get using the JSON Web Token is the user's information, not including their password.
