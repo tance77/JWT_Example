@@ -1,9 +1,11 @@
-#JSON Web Token Example
+# JSON Web Token Example
+
 This application uses Node JS, Express, and MySql
 
 ![Imgur](http://i.imgur.com/QZXbMq1.png)
 ![Imgur](http://i.imgur.com/ScV1igE.png)
-#Getting Starting
+
+# Getting Starting
 
 * Git clone https://github.com/tance77/JWT_Example.git
 * cd to the newly cloned directory 
