@@ -10,6 +10,7 @@ This application uses Node JS, Express, and MySql
 * Git clone https://github.com/tance77/JWT_Example.git
 * cd to the newly cloned directory 
 * yarn install (npm install, should work as well, but yarn is much cleaner)
+* yarn add global mysql sequelize sequelize-cli
 * sequelize db:migrate (if this fails, you may need to create the schema jwt_example then re-run this command)
 * npm start
 * From your browser navigate to localhost:3001 or 127.0.0.1:3001
