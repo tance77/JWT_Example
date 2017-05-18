@@ -1,7 +1,7 @@
 var db     = require("../database");
+var jwt    = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 var salt   = bcrypt.genSaltSync(10);
-var jwt    = require("jsonwebtoken");
 
 module.exports.createUser = function (req, res) {
     var password  = bcrypt.hashSync(req.body.password, salt),
@@ -21,37 +21,45 @@ module.exports.createUser = function (req, res) {
             });
         }
         else {
+            res.status(200);
             res.json({
-                status: "User created successfully."
+                status: "success"
             });
         }
     });
 };
 
 module.exports.login = function (req, res) {
-    var secret            = "2a$10$aWC05XXmsto7PCnQxgO9f.Rnm0OYPYhaCqpT2dsX3.aCTJtr25eT6";
-    var submittedPassword = req.body.user_password;
-    var sql               = "SELECT * FROM users WHERE username='" + req.body.loginName + "' or email='" + req.body.loginName + "'";
-    db.query(sql, function (err, rows, fields) {
-        if (!err && rows.length > 0) {
-            var userData   = rows[0];
-            var isVerified = bcrypt.compareSync(submittedPassword, userData.user_password);
-            if (isVerified) {
-                var token = jwt.sign(userData, secret, {
-                    expiresIn: 60 * 60 * 24
-                });
-                delete userData.user_password;
-                res.json({
-                    jwt_token: token,
-                    data: userData
-                });
+    if (req.method === "POST") {
+        var submittedPassword = req.body.password;
+        var sql               = "SELECT * FROM users WHERE username='" + req.body.username + "' or email='" + req.body.username + "'";
+        db.query(sql, function (err, rows, fields) {
+            if (!err && rows.length > 0) {
+                var userData   = rows[0];
+                var isVerified = bcrypt.compareSync(submittedPassword, userData.password);
+                if (isVerified) {
+                    var token = jwt.sign(userData, process.env.SECRET_KEY, {
+                        expiresIn: 60 * 60 * 24
+                    });
+                    delete userData.password;
+                    res.send({redirect: "/users/dashboard?token=" + token})
+
+                }
+                else {
+                    res.status(400).send("Incorrect password.");
+                }
             }
             else {
-                res.status(400).send("Incorrect password.");
+                res.status(500).send("Unable to process query.");
             }
-        }
-        else {
-            res.status(500).send("Unable to process query.");
-        }
-    });
+        });
+    }
+    else {
+        res.render("login");
+    }
+};
+
+module.exports.dashboard = function (req, res) {
+    var jwtToken = req.query.token;
+    res.render("dashboard", {token: jwtToken});
 };
