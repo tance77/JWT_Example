@@ -1,3 +1,69 @@
-<h1>JSON Web Token:</h1>
-<h3>{{token}}</h3>
+<div id="info">
+<div class="col-sm-6">
+<div class="form-group">
+  <label for="comment">JSON Web Token:</label>
+  <textarea id="token-field" class="form-control" rows="5" v-model="token">{{token}}</textarea>
+</div>
+    <button type="button" class="btn btn-primary btn-lg btn-block login-button"
+            v-on:click="getInfo()">        Get Secure Information</button>
+</div>
+</div>
+<script>
+    var vue = new Vue({
+        el: "#info",
+        data: {
+            token: $("#token-field").val()
+        },
+        methods: {
+            get: function (url, headers) {
+                var self = this;
+                return new Promise(function (resolve, reject) {
+                    $.ajax({
+                        url: url,
+                        headers: headers,
+                        type: "GET",
+                        error: function (xhr, status) {
+                            reject(xhr);
+                        },
+                        success: function (xhr, statusText, req) {
+                            resolve(xhr);
+                        }
+                    });
+                });
+            },
+            getInfo: function () {
+                var self    = this;
+                var headers = {
+                    token: self.token
+                };
+                self.get("/api/test/", headers).then(function (xhr) {
+                    alert(JSON.stringify(xhr));
+                }).catch(function (error) {
+                    if (error.responseJSON) {
+                        alert(JSON.stringify(error.responseJSON));
+                    }
+                    else {
+                        console.log(error);
+                    }
+                });
+            }
+        },
+        watch: {
+//            date: function () {
+//                this.updateTrackingInformation();
+//            }
+        },
+        mounted: function () {
+//            var self = this;
+            // Hook the change event to give vue the new value
+//            $("#start-date").on("dp.change", function (e) {
+//                var curDate = e.date.format("YYYY-MM-DD");
+//                if (curDate !== self.date) {
+//                    self.date = e.date.format("YYYY-MM-DD");
+//                }
+//            });
+        }
+    });
+</script>
+
 

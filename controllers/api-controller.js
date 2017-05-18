@@ -3,8 +3,8 @@ var jwt = require("jsonwebtoken");
 
 
 module.exports.test = function (req, res) {
-  authenticate(req, res, function (next) {
-        res.send("it worked");
+  authenticate(req, res, function (decoded) {
+        res.json(decoded);
   });
 };
 
@@ -22,7 +22,7 @@ function authenticate(req, res, next) {
                 });
             }
             else {
-                next();
+                next(decode);
             }
         });
     }

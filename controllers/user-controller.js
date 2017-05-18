@@ -21,10 +21,7 @@ module.exports.createUser = function (req, res) {
             });
         }
         else {
-            res.status(200);
-            res.json({
-                status: "success"
-            });
+            res.send({redirect: "/users/login"});
         }
     });
 };
@@ -38,10 +35,10 @@ module.exports.login = function (req, res) {
                 var userData   = rows[0];
                 var isVerified = bcrypt.compareSync(submittedPassword, userData.password);
                 if (isVerified) {
+                    delete userData.password;
                     var token = jwt.sign(userData, process.env.SECRET_KEY, {
                         expiresIn: 60 * 60 * 24
                     });
-                    delete userData.password;
                     res.send({redirect: "/users/dashboard?token=" + token})
 
                 }

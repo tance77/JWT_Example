@@ -86,10 +86,10 @@
                 });
             },
             clearErrors: function () {
-                var self                  = this;
-                self.errors               = [];
-                self.usernameError        = "";
-                self.passwordError        = "";
+                var self           = this;
+                self.errors        = [];
+                self.usernameError = "";
+                self.passwordError = "";
             },
             checkForms: function () {
                 var self = this;
@@ -113,9 +113,9 @@
                         password: self.password
                     };
                     self.post("/users/login/", d).then(function (xhr) {
-                        if (typeof xhr.redirect === 'string') {
-                            console.log(data.redirect);
-                            window.location = data.redirect;
+                        if (typeof xhr.redirect === "string") {
+                            console.log(xhr.redirect);
+                            window.location = xhr.redirect;
                         }
                     }).catch(function (error) {
                         self.errors  = [];

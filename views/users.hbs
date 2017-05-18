@@ -128,7 +128,7 @@
                         error: function (xhr, status) {
                             reject(xhr);
                         },
-                        success: function (xhr, statusText) {
+                        success: function (xhr, status, req) {
                             resolve(xhr);
                         }
                     });
@@ -195,10 +195,10 @@
                         username: self.username,
                         password: self.password
                     };
-                    self.post("/users/create/", d).then(function (result) {
-                        console.log(result);
-                        if (result) {
-                            location.href= "/users/login/";
+                    self.post("/users/create/", d).then(function (xhr) {
+                        console.log(typeof xhr.redirect === "string");
+                        if (typeof xhr.redirect === "string") {
+                            window.location = xhr.redirect;
                         }
                     }).catch(function (error) {
                         self.errors  = [];
