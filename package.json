@@ -7,18 +7,18 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "body-parser": "~1.17.1",
+    "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
-    "express": "~4.15.2",
+    "express": "^4.16.4",
     "hbs": "~4.0.1",
-    "jsonwebtoken": "^7.4.0",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
     "mysql": "^2.13.0",
     "node-restful": "^0.2.6",
-    "node-sass-middleware": "0.9.8",
+    "node-sass-middleware": "^0.11.0",
     "sequelize": "^3.30.4",
-    "sequelize-cli": "^2.7.0",
+    "sequelize-cli": "^5.4.0",
     "serve-favicon": "~2.4.2"
   }
 }
