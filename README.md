@@ -1,13 +1,29 @@
-# JSON Web Token Example
+# JWT Example
 
-A small Node.js, Express, and MySQL example: register a user, log in, and use a signed JWT to retrieve that user's public profile claims.
+Create an account, log in, and use a JSON Web Token (JWT) to get your account details.
 
-## Requirements
+**New here? Follow steps 1–5 in order. Setup only needs to be done once.**
 
-- The latest patch release of Node.js 24 or 26 LTS and npm. `.nvmrc` selects Node.js 26.
-- MySQL 8.4 LTS, running locally or on a host you configure.
+## 1. Install these first
 
-## Run locally
+- [Node.js 26 LTS](https://nodejs.org/en/download) — includes npm. Use the latest version of Node.js 26 (at least 26.13.1).
+- [Git](https://git-scm.com/install/) — downloads this project.
+- [MySQL Server 8.4](https://dev.mysql.com/downloads/mysql/8.4.html) — stores your accounts. Start the server after installing it, and save the password you choose for its `root` user.
+
+Open a **new terminal** after installing. Use **PowerShell** on Windows or **Terminal** on macOS/Linux.
+
+Run these to check that Node.js and npm work:
+
+```sh
+node --version
+npm --version
+```
+
+Both should print a version number. The Node.js version should start with `v26`.
+
+## 2. Download the project
+
+Run these commands one at a time:
 
 ```sh
 git clone https://github.com/tance77/JWT_Example.git
@@ -15,13 +31,48 @@ cd JWT_Example
 npm ci
 ```
 
-Copy `.env.example` to `.env` (`cp .env.example .env` on macOS/Linux, `Copy-Item .env.example .env` in PowerShell). Set your database credentials and generate a unique signing secret:
+Keep this terminal open. Run the remaining commands from inside the `JWT_Example` folder.
+
+## 3. Add your settings
+
+Copy `.env.example` to a new file called `.env`.
+
+**Windows PowerShell:**
+
+```powershell
+Copy-Item .env.example .env
+```
+
+**macOS/Linux:**
+
+```sh
+cp .env.example .env
+```
+
+Now generate a secret key:
 
 ```sh
 node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
 ```
 
-Paste that value into `SECRET_KEY` in `.env`. The application requires at least 32 bytes and will refuse to start with an empty or short secret. `.env` is ignored by Git; do not commit credentials.
+Copy the long line it prints. Open `.env` in a text editor and change these two lines:
+
+```dotenv
+SECRET_KEY=paste_the_long_line_here
+DB_PASSWORD="your_mysql_password"
+```
+
+- Replace `paste_the_long_line_here` with the generated key.
+- Replace `your_mysql_password` with the MySQL `root` password from step 1. Keep the quotes.
+- Leave the other settings as they are for a normal local installation. If you use another MySQL username, change `DB_USER` too.
+
+Save the file as **`.env`**, not `.env.txt`. Keep it private.
+
+**This MySQL password connects the app to the database. You will create your website login in step 5.**
+
+## 4. Set up the database and start the app
+
+Make sure MySQL Server is running. Then run:
 
 ```sh
 npm run db:create
@@ -29,48 +80,96 @@ npm run db:migrate
 npm start
 ```
 
-Open [http://localhost:3001](http://localhost:3001), create a user, and log in. The dashboard lets you inspect the token and send it to the protected API. Set `PORT` in `.env` to change the port. `npm run dev` restarts the server when source files change. No global npm packages or asset compilation are needed.
+Run each command after the previous one finishes successfully. The first two create the database and account table. They are safe to run again.
 
-`db:create` needs permission to create the configured database. If it already exists, you can go straight to `db:migrate`. Both commands are safe to repeat.
+When you see **`Listening on port 3001`**, open:
 
-## API example
+**[http://localhost:3001](http://localhost:3001)**
 
-Register with `POST /users/create`, supplying JSON fields `username`, `email`, and `password`; `firstName` and `lastName` are optional. New passwords must have at least 8 characters and at most 72 UTF-8 bytes, bcrypt's limit. Passwords receive separate random salts.
+Leave the terminal running while you use the app. Press **Ctrl+C** to stop it.
 
-Log in with a username or email:
+## 5. Try it
 
-```sh
-curl -X POST http://localhost:3001/users/login -H "Content-Type: application/json" -d '{"username":"demo","password":"your-password"}'
-```
+1. Click **Create New User** and fill in the form. Use a password with at least 8 characters.
+2. Click **Register**.
+3. Log in with the username and password you just created.
+4. On the dashboard, click **Get Secure Information**.
 
-The response includes `token`, `tokenType: "Bearer"`, `expiresIn: 3600`, and `redirect: "/users/dashboard"`. Send the token to the API:
+You should see your account details. The long text in the token box is your JWT: the app sends it to the server to prove you logged in.
 
-```sh
-curl http://localhost:3001/api/test -H "Authorization: Bearer YOUR_TOKEN"
-```
+If you refresh the dashboard or the token expires after one hour, log in again.
 
-Missing, invalid, and expired tokens return HTTP 401. Tokens expire after one hour and verification restricts the algorithm to HS256 and checks issuer and audience. The original `token` request header and GET request body field are still accepted for older example clients; new clients should use `Authorization: Bearer`.
+## Run it again later
 
-JWT payloads are readable, not encrypted. This example includes profile fields but never the password hash. The browser briefly uses `sessionStorage` to transfer the token from login to the dashboard, then removes the stored value; refreshing the dashboard clears its token field. Tokens are not included in redirect URLs.
-
-## Updating an existing checkout
-
-Install a supported Node.js version, run `npm ci`, and configure `.env` using your existing database credentials. Database settings now come from environment variables rather than `config/config.json` or `database.js`. Choose a new `SECRET_KEY`; the old hardcoded secret was public. Existing tokens will need to be replaced by logging in again.
-
-The application retains the original `users` columns, bcrypt password hashes, and `SequelizeMeta` migration record named `20170518215602-db_create.js`. `npm run db:migrate` skips that migration when it has already been recorded. Existing users do not need to register again. The one-table setup uses `mysql2` directly, so Sequelize and its global CLI are no longer needed. The `.hbs` templates use `express-handlebars` in place of the vulnerable `hbs` package. Browser code uses native forms and `fetch`, with all assets served locally.
-
-For a code rollback, restore the previous Git revision and its dependency/configuration files. This update does not change existing database tables or delete user data. Do not run a database reset or drop tables as part of the update.
-
-## Checks and maintenance
+Start MySQL Server, open a terminal in the `JWT_Example` folder, and run:
 
 ```sh
-npm test
-npm audit
-npm outdated
+npm start
 ```
 
-The default tests check rendering, input validation, password hashing, parameterized SQL, token verification, error handling, and rate limiting. To also run the MySQL integration test, configure `DB_HOST`, `DB_PORT`, `DB_USER`, and `DB_PASSWORD` in your shell and set `TEST_MYSQL=1` before running `npm test`. This test creates a uniquely named disposable database, checks migrations and the full authentication flow, then removes that database. It never migrates or clears the configured `DB_NAME`. Its account must be allowed to create and drop test databases. `npm test` does not load your local `.env`.
+Your settings and accounts are saved. You can skip the setup steps.
 
-GitHub Actions runs the complete suite with MySQL on Node.js 24 and 26, plus a Windows check, and runs `npm audit`. Dependabot checks npm packages and GitHub Actions weekly. Commit `package-lock.json` when updating dependencies and use `npm ci` for reproducible installs.
+## Something went wrong?
 
-This repository is a learning example. A deployed authentication service also needs HTTPS, account recovery and verification, token revocation/refresh design, and a rate-limit store shared across server instances. The included in-memory limiter allows 50 registration/login attempts per IP per 15 minutes.
+| What you see | What to do |
+| --- | --- |
+| `node`, `npm`, or `git` is not recognized / command not found | Install the missing tool from step 1, then close and reopen your terminal. |
+| `EBADENGINE` / unsupported Node.js version | Install the latest Node.js 26 LTS release. Check it with `node --version`. |
+| `ECONNREFUSED` / cannot connect to MySQL | Start MySQL Server. Check `DB_HOST` and `DB_PORT` in `.env`; the defaults are `127.0.0.1` and `3306`. |
+| `Access denied` | Check `DB_USER` and `DB_PASSWORD` in `.env`. If your MySQL account has no password, use `DB_PASSWORD=`. The user needs permission to create the database. |
+| Unknown database / missing `users` table | Run `npm run db:create`, then `npm run db:migrate`. |
+| An error mentioning `SECRET_KEY` | Generate a key in step 3, paste it into `.env`, save, and restart the app. |
+| `EADDRINUSE` / port already in use | Change `PORT=3001` to `PORT=3002` in `.env`, restart, and open `http://localhost:3002`. |
+| HTTP 401 / invalid or expired token | Log in again to get a new token. |
+| HTTP 429 / too many attempts | Wait up to 15 minutes, then try again. |
+
+## Optional details
+
+<details>
+<summary>Updating an old copy of this project</summary>
+
+1. Install the latest Node.js 26 LTS release.
+2. Run `git pull`, then `npm ci` in the project folder.
+3. Create `.env` if you do not have one. Add your existing database credentials and `DB_NAME`, then generate a new `SECRET_KEY` using step 3 above.
+4. Run `npm run db:migrate`, then `npm start`.
+
+Existing accounts and password hashes are preserved. The original table layout and `SequelizeMeta` migration record are retained. Keep your database; no reset is needed.
+
+Database settings now come from `.env`. Sequelize and its global CLI are no longer needed. Log in again after updating because the old hardcoded signing key has been removed.
+
+To roll back the code, restore the previous Git revision and its dependency/configuration files. This update does not change existing database tables or delete user data.
+
+</details>
+
+<details>
+<summary>Using the API directly</summary>
+
+| Request | What to send |
+| --- | --- |
+| `POST /users/create` | JSON with `username`, `email`, and `password`. `firstName` and `lastName` are optional. |
+| `POST /users/login` | JSON with `username` (or email) and `password`. |
+| `GET /api/test` | An `Authorization: Bearer YOUR_TOKEN` header. |
+
+Login returns `token`, `tokenType: "Bearer"`, `expiresIn: 3600`, and `redirect: "/users/dashboard"`. Read the token from the JSON response.
+
+Passwords must have at least 8 characters and at most 72 UTF-8 bytes. Tokens expire after one hour. Missing, invalid, and expired tokens return HTTP 401. Older clients can still use the original `token` header or GET request body field.
+
+JWT contents are readable, so keep secrets out of them. This app excludes password hashes from tokens and keeps tokens out of URLs. The browser briefly uses `sessionStorage` to transfer the token to the dashboard, then removes the stored value.
+
+</details>
+
+<details>
+<summary>Development, tests, and maintenance</summary>
+
+- `npm run dev` — restart automatically when code changes.
+- `npm test` — run tests; MySQL is not required for the default tests.
+- `npm audit` — check dependencies for reported vulnerabilities.
+- `npm outdated` — check for newer package versions.
+
+For the MySQL integration test, set `DB_HOST`, `DB_PORT`, `DB_USER`, and `DB_PASSWORD` in your shell, set `TEST_MYSQL=1`, and run `npm test`. This test creates and removes its own database. Its MySQL user needs permission to create and drop test databases. It leaves the database named in `DB_NAME` alone. `npm test` does not load `.env`.
+
+Supported Node.js versions are 24.22.3+ within version 24, or 26.13.1+ within version 26. `.nvmrc` selects 26. GitHub Actions runs tests with MySQL on both versions, plus a Windows check, and runs `npm audit`. Dependabot checks packages and GitHub Actions weekly. Commit `package-lock.json` when updating packages and use `npm ci` to install them.
+
+This is a learning example. A deployed authentication service also needs HTTPS, account recovery and verification, token revocation/refresh design, and a rate-limit store shared across server instances. The included limiter allows 50 registration/login attempts per IP per 15 minutes.
+
+</details>
