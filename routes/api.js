@@ -1,8 +1,8 @@
-var express = require("express");
-var router  = express.Router();
-var api = require("../controllers/api-controller.js");
+const express = require("express");
+const apiController = require("../controllers/api-controller");
 
-//Routes
-router.get("/test", api.test);
-
-module.exports = router;
+module.exports = function apiRoutes({ secret }) {
+    const router = express.Router();
+    router.get("/test", apiController({ secret }));
+    return router;
+};

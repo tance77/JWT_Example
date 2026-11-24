@@ -1,23 +1,19 @@
 <!DOCTYPE html>
-<html >
-<head >
-    <title >{{title}}</title >
-    <script src = "https://code.jquery.com/jquery-3.2.1.min.js"
-            integrity = "sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin = "anonymous" ></script >
-    <link href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel = "stylesheet"
-          integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin = "anonymous" >
-    <script src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity = "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin = "anonymous" ></script >
-    <link href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel = "stylesheet"
-          integrity = "sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
-          crossorigin = "anonymous" >
-    <link rel = 'stylesheet' href = '/stylesheets/style.css' />
-    <script src = "https://unpkg.com/vue" ></script >
-
-</head >
-<body >
-{{{body}}}
-</body >
-</html >
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{title}} | JWT Example</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="/javascripts/app.js" defer></script>
+</head>
+<body>
+    <nav aria-label="Main navigation">
+        <a href="/">JWT Example</a>
+        <a href="/users">Create New User</a>
+        <a href="/users/login">Login</a>
+        <a href="/users/dashboard">Dashboard</a>
+    </nav>
+    <main>{{{body}}}</main>
+</body>
+</html>

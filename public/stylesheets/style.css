@@ -1,52 +1,19 @@
-body, html {
-  height: 100%;
-  background-repeat: no-repeat;
-  background-color: #d3d3d3;
-  font-family: 'Oxygen', sans-serif; }
-
-.main {
-  margin-top: 70px; }
-
-h1.title {
-  font-size: 50px;
-  font-family: 'Passion One', cursive;
-  font-weight: 400; }
-
-hr {
-  width: 10%;
-  color: #fff; }
-
-.form-group, label {
-  margin-bottom: 15px; }
-
-input {
-  font-size: 11px;
-  padding-top: 3px; }
-  input::-webkit-input-placeholder {
-    font-size: 11px;
-    padding-top: 3px; }
-
-.main-login {
-  background-color: #fff;
-  /* shadows and rounded borders */
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3); }
-
-.main-center {
-  margin-top: 30px;
-  margin: 0 auto;
-  max-width: 330px;
-  padding: 40px 40px; }
-
-.login-button {
-  margin-top: 5px; }
-
-.login-register {
-  font-size: 11px;
-  text-align: center; }
-
-/*# sourceMappingURL=style.css.map */
+* { box-sizing: border-box; }
+body { margin: 0; background: #d3d3d3; color: #222; font: 16px/1.5 system-ui, sans-serif; }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem 1.5rem; background: #fff; }
+a { color: #155d98; }
+main { max-width: 42rem; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 3px; box-shadow: 0 2px 4px #0002; }
+h1 { margin-top: 0; }
+form { display: grid; gap: .6rem; }
+label { font-weight: 600; }
+input, textarea, button { font: inherit; border-radius: 3px; padding: .65rem; }
+input, textarea { width: 100%; border: 1px solid #777; margin-bottom: .5rem; }
+textarea { resize: vertical; font-family: monospace; }
+button { background: #176aa9; color: #fff; border: 0; cursor: pointer; margin-top: .5rem; }
+button:disabled { opacity: .6; cursor: wait; }
+:focus-visible { outline: 3px solid #176aa9; outline-offset: 3px; }
+.hint { margin-top: -.5rem; font-size: .875rem; }
+[role="alert"] { color: #a01616; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f2f2f2; padding: 1rem; }
+[hidden] { display: none; }
+@media (max-width: 46rem) { main { margin: 1rem; padding: 1.5rem; } }

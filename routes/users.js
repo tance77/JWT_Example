@@ -1,17 +1,13 @@
-var express = require("express");
-var router  = express.Router();
+const express = require("express");
+const userController = require("../controllers/user-controller");
 
-/* Controller */
-var userController = require("../controllers/user-controller.js");
-
-/* GET users listing. */
-router.get("/", function (req, res, next) {
-    res.render("users", {title: "Make a new User"});
-});
-
-router.get("/dashboard", userController.dashboard);
-router.get("/login", userController.login);
-
-router.post("/create", userController.createUser);
-router.post("/login", userController.login);
-module.exports = router;
+module.exports = function userRoutes({ database, secret, authLimiter }) {
+    const router = express.Router();
+    const controller = userController({ database, secret });
+    router.get("/", (req, res) => res.render("users", { title: "Make a new User" }));
+    router.get("/dashboard", (req, res) => res.render("dashboard", { title: "JWT Dashboard" }));
+    router.get("/login", (req, res) => res.render("login", { title: "Login" }));
+    router.post("/create", authLimiter, controller.createUser);
+    router.post("/login", authLimiter, controller.login);
+    return router;
+};

@@ -1,11 +1,4 @@
-var mysql = require("mysql");
+const mysql = require("mysql2/promise");
+const config = require("./config/database");
 
-/* Configuration */
-var connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root",
-    database: "jwt_example"
-});
-
-module.exports = connection;
+module.exports = mysql.createPool({ ...config, connectionLimit: 10 });

@@ -1,40 +1,20 @@
-var db  = require("../database");
-var jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
-
-module.exports.test = function (req, res) {
-  authenticate(req, res, function (decoded) {
-        res.json(decoded);
-  });
+module.exports = function apiController({ secret }) {
+    return function test(req, res) {
+        const authorization = req.get("authorization");
+        // Keep the original token header/body for existing example clients.
+        const token = authorization ? /^Bearer (\S+)$/i.exec(authorization)?.[1] :
+            req.get("token") || req.body?.token;
+        if (typeof token !== "string" || !token) {
+            return res.status(401).json({ error: { code: 401, message: "No JSON token received." } });
+        }
+        try {
+            return res.json(jwt.verify(token, secret, {
+                algorithms: ["HS256"], issuer: "jwt-example", audience: "jwt-example-api"
+            }));
+        } catch {
+            return res.status(401).json({ error: { code: 401, message: "JSON Web Token is invalid or expired." } });
+        }
+    };
 };
-
-function authenticate(req, res, next) {
-    var token = req.body.token || req.headers["token"];
-    if (token) {
-        jwt.verify(token, process.env.SECRET_KEY, function (err, decode) {
-            if (err) {
-                res.status(400);
-                res.json({
-                    error: {
-                        "code": 400,
-                        "message": "JSON Web Token is invalid."
-                    }
-                });
-            }
-            else {
-                next(decode);
-            }
-        });
-    }
-    else {
-        res.status(401);
-        res.json(
-            {
-                error: {
-                    "code": 401,
-                    "message": "No JSON token received."
-                }
-            }
-        );
-    }
-}

@@ -1,54 +1,16 @@
 "use strict";
 
-module.exports = {
-    up: function (queryInterface, Sequelize) {
-      /*
-       Add altering commands here.
-       Return a promise to correctly handle asynchronicity.
-
-       Example:
-       return queryInterface.createTable('users', { id: Sequelize.INTEGER });
-       */
-        return queryInterface.createTable("users", {
-            id: {
-                type: Sequelize.INTEGER,
-                primaryKey: true,
-                autoIncrement: true
-            },
-            username: {
-                type: Sequelize.STRING,
-                allowNull: false,
-                unique: true
-            },
-            password: {
-                type: Sequelize.STRING,
-                allowNull: false
-            },
-            email: {
-                type: Sequelize.STRING,
-                allowNull: false,
-                unique: true
-            },
-            first_name: {
-                type: Sequelize.STRING,
-                default: null
-            },
-            last_name: {
-                type: Sequelize.STRING,
-                default: null
-            },
-            display_name: {
-                type: Sequelize.STRING,
-                default: null
-            },
-            location: {
-                type: Sequelize.STRING,
-                default: null
-            }
-        });
-    },
-
-    down: function (queryInterface, Sequelize) {
-        return queryInterface.dropTable("users");
-    }
+// The table layout and filename match the original Sequelize migration.
+// IF NOT EXISTS also makes retrying after a partially completed setup safe.
+module.exports.up = async function (connection) {
+    await connection.query(`CREATE TABLE IF NOT EXISTS users (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        first_name VARCHAR(255) DEFAULT NULL,
+        last_name VARCHAR(255) DEFAULT NULL,
+        display_name VARCHAR(255) DEFAULT NULL,
+        location VARCHAR(255) DEFAULT NULL
+    )`);
 };
